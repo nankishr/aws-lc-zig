@@ -40,6 +40,8 @@ pub fn build(b: *std.Build) !void {
 
     const upstream = b.dependency("aws-lc", .{});
 
+    b.addNamedLazyPath("include", upstream.path("include"));
+
     const vendor = b.addSystemCommand(&.{ "python3", "-u" });
     vendor.addFileArg(b.path("scripts/vendor.py"));
     vendor.addArgs(&.{ "--zig", b.graph.zig_exe });
@@ -151,7 +153,6 @@ pub fn build(b: *std.Build) !void {
         }
 
         const lib = b.addLibrary(.{ .name = "crypto", .linkage = linkage, .root_module = mod });
-        lib.installHeadersDirectory(upstream.path("include/openssl"), "openssl", .{});
         b.installArtifact(lib);
         crypto_lib = lib;
     }

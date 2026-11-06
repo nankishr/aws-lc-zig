@@ -7,7 +7,8 @@ const Base = struct {
 };
 
 fn loadZon(comptime T: type, b: *std.Build, path: []const u8) !?T {
-    const bytes = std.Io.Dir.cwd().readFileAlloc(b.graph.io, path, b.allocator, .limited(16 * 1024 * 1024)) catch |err| switch (err) {
+    const pathx = try b.root.joinString(b.allocator, path);
+    const bytes = std.Io.Dir.cwd().readFileAlloc(b.graph.io, pathx, b.allocator, .limited(16 * 1024 * 1024)) catch |err| switch (err) {
         error.FileNotFound => return null,
         else => return err,
     };

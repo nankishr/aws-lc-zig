@@ -1,0 +1,21 @@
+.{
+    .name = .aws_lc_zig,
+    .version = "0.0.0",
+    .fingerprint = 0xb26ab2d28075d831,
+    .minimum_zig_version = "0.17.1",
+    .dependencies = .{
+        .@"aws-lc" = .{
+            .url = "https://github.com/aws/aws-lc/archive/refs/tags/v5.12.0.tar.gz",
+            .hash = "N-V-__8AAIc07hKsDpfYP-HA8bzKWpspXwegv9lKzxDmoM_6",
+        },
+        .nasm = .{
+            .url = "git+https://github.com/allyourcodebase/nasm#f11aa6ed5a7eb339259b3439b3e47d58dba998cc",
+            .hash = "nasm-3.0.1-B_NnpSJUAABp8P_x6B1dPmYEcBVlfF06ZpyWcCvl461C",
+        },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "generated"
+    },
+}

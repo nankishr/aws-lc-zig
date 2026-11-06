@@ -1,0 +1,4 @@
+.{
+    "generated-src/linux-ppc64le/crypto/fipsmodule/aesp8-ppc.S",
+    "generated-src/linux-ppc64le/crypto/fipsmodule/ghashp8-ppc.S",
+}

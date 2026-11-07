@@ -1,0 +1,3 @@
+.{
+    "generated-src/linux-ppc64le/crypto/test/trampoline-ppc.S",
+}

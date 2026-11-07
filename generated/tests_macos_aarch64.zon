@@ -1,0 +1,3 @@
+.{
+    "generated-src/ios-aarch64/crypto/test/trampoline-armv8.S",
+}

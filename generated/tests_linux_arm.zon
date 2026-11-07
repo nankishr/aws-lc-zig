@@ -1,0 +1,3 @@
+.{
+    "generated-src/linux-arm/crypto/test/trampoline-armv4.S",
+}

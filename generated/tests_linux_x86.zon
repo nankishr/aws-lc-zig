@@ -1,0 +1,3 @@
+.{
+    "generated-src/linux-x86/crypto/test/trampoline-x86.S",
+}

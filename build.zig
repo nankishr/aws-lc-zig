@@ -18,6 +18,7 @@ const Tests = struct {
 const TestExe = struct {
     name: []const u8,
     files: []const []const u8,
+    needs_ssl: bool = false,
 };
 
 fn loadZon(comptime T: type, b: *std.Build, path: []const u8) !?T {
@@ -251,10 +252,10 @@ pub fn build(b: *std.Build) !void {
 
     const test_step = b.step("test", "Build and run the aws-lc test suites");
 
-    if (linkage != .static or ssl_lib == null) {
-        test_step.dependOn(&b.addFail("the test suites need -Dlinkage=static and libssl").step);
+    const libcrypto = crypto_lib orelse {
+        test_step.dependOn(&b.addFail("the test suites need libcrypto (-Dcrypto=true)").step);
         return;
-    }
+    };
 
     const t = (try loadZon(Tests, b, "generated/tests.zon")) orelse {
         test_step.dependOn(&b.addFail("Missing test sources, run zig build vendor").step);
@@ -308,8 +309,8 @@ pub fn build(b: *std.Build) !void {
         .files = try addAsm(b, support_mod, upstream, test_asm, os, arch),
         .flags = flags.items,
     });
-    support_mod.linkLibrary(ssl_lib.?);
-    support_mod.linkLibrary(crypto_lib.?);
+    if (ssl_lib) |l| support_mod.linkLibrary(l);
+    support_mod.linkLibrary(libcrypto);
     const support_lib = b.addLibrary(.{
         .name = "aws_lc_test_support",
         .linkage = .static,
@@ -318,11 +319,12 @@ pub fn build(b: *std.Build) !void {
 
     const exes = [_]TestExe{
         .{ .name = "crypto_test", .files = t.crypto_test },
-        .{ .name = "ssl_test", .files = t.ssl_test },
+        .{ .name = "ssl_test", .files = t.ssl_test, .needs_ssl = true },
     };
 
     for (exes) |spec| {
         if (spec.files.len == 0) continue;
+        if (spec.needs_ssl and ssl_lib == null) continue;
 
         const mod = b.createModule(.{
             .target = target,
@@ -334,8 +336,8 @@ pub fn build(b: *std.Build) !void {
         addTestIncludes(mod, upstream, t.includes);
         try addTestFiles(b, mod, upstream, spec.files, test_c, test_cc);
         mod.linkLibrary(support_lib);
-        mod.linkLibrary(ssl_lib.?);
-        mod.linkLibrary(crypto_lib.?);
+        if (ssl_lib) |l| mod.linkLibrary(l);
+        mod.linkLibrary(libcrypto);
 
         const exe = b.addExecutable(.{ .name = spec.name, .root_module = mod });
 
